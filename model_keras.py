@@ -42,20 +42,18 @@ top_model.load_weights('bottleneck_fc_model.h5')
 model = Model(input=base_model.input, output=top_model(base_model.output))
 print('Model loaded.')
 
-# set the first 25 layers (up to the last conv block)
-# to non-trainable (weights will not be updated)
+# block the first 6 layers (up to the last conv block)
 for layer in model.layers[:6]:
     layer.trainable = False
 for layer in model.layers[6:]:
     layer.trainable = True
 # compile the model with a SGD/momentum optimizer
-# and a very slow learning rate.
 model.compile(loss='binary_crossentropy',
               optimizer=optimizers.SGD(lr=1e-4, momentum=0.9,decay=1e-7),
               #optimizer="adam",
               metrics=['accuracy'])
 
-# prepare data augmentation configuration
+# prepare data preprocessing and augmentation
 train_datagen = ImageDataGenerator(
     rescale=1. / 255,
 #    featurewise_center=True,
